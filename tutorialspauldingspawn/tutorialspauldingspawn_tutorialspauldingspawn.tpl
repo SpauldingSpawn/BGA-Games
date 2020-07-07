@@ -26,7 +26,7 @@
 -->
 
 
-Rar rar hearts time.
+Rar rar hearts time
 
 <div id="myhand_wrap" class="whiteblock">
     <h3>My Hand</h3>
