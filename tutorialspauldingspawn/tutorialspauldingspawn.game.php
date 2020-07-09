@@ -30,7 +30,14 @@ class TutorialSpauldingSpawn extends Table
         //  If your game has options (variants), you also have to associate here a label to
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
-        parent::__construct();
+        parent::__construct();self::initGameStateLabels( array( 
+            "currentHandType" => 10, 
+            "trickColor" => 11, 
+            "alreadyPlayedHearts" => 12, ) );
+            
+
+        $this->cards = self::getNew( "module.common.deck" );
+        $this->cards->init( "card" );
         
         self::initGameStateLabels( array( 
             //    "my_first_global_variable" => 10,
@@ -76,18 +83,45 @@ class TutorialSpauldingSpawn extends Table
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
+
+        // Shuffle deck
+        $this->cards->shuffle('deck');
+        // Deal 13 cards to each players
+        $players = self::loadPlayersBasicInfos();
+        foreach ( $players as $player_id => $player ) {
+            $cards = $this->cards->pickCards(13, 'deck', $player_id);
+        } 
         
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        // Note: hand types: 0 = give 3 cards to player on the left
+        //                   1 = give 3 cards to player on the right
+        //                   2 = give 3 cards to player opposite
+        //                   3 = keep cards
+        self::setGameStateInitialValue( 'currentHandType', 0 );
+
+        // Set current trick color to zero (= no trick color)
+        self::setGameStateInitialValue( 'trickColor', 0 );
         
+        // Mark if we already played hearts during this hand
+        self::setGameStateInitialValue( 'alreadyPlayedHearts', 0 );
+        
+        // Create cards
+        $cards = array ();
+        foreach ( $this->colors as $color_id => $color ) {
+            // spade, heart, diamond, club
+            for ($value = 2; $value <= 14; $value ++) {
+                //  2, 3, 4, ... K, A
+                $cards [] = array ('type' => $color_id,'type_arg' => $value,'nbr' => 1 );
+            }
+        }
+        $this->cards->createCards( $cards, 'deck' );
+
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // TODO: setup the initial game situation here
        
 
         // Activate first player (which is in general a good idea :) )
@@ -117,6 +151,11 @@ class TutorialSpauldingSpawn extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        // Cards in player hand
+        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+        
+        // Cards played on the table
+        $result['cardsontable'] = $this->cards->getCardsInLocation( 'cardsontable' );
   
         return $result;
     }
