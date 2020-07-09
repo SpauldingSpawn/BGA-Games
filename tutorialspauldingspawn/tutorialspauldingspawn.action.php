@@ -39,8 +39,16 @@
       }
   	} 
   	
-  	// TODO: defines your action entry points there
+  	public function playCard() {
+      self::setAjaxMode();
+      $card_id = self::getArg("id", AT_posint, true);
+      $this->game->playCard($card_id);
+      self::ajaxResponse();
+  }
 
+  function argGiveCards() {
+    return array ();
+  }
 
     /*
     

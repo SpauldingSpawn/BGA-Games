@@ -56,7 +56,8 @@ Rar rar hearts times Updated
 
 // Javascript HTML templates
 
-var jstpl_cardontable = '<div class="cardontable" id="cardontable_${player_id}" style="background-position:-${x}px -${y}px">\ </div>';
+var jstpl_cardontable = '<div class="cardontable" id="cardontable_${player_id}" style="background-position:-${x}px -${y}px">\
+                        </div>';
 
 /*
 // Example:

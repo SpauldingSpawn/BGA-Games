@@ -69,13 +69,6 @@
 
 /*** cards on table ***/
 
-.cardontable {
-    position: absolute;
-    width: 72px;
-    height: 96px;
-    background-image: url('img/cards.jpg'); 
-}
-
 .playertablecard {
     display: inline-block;
     position: relative;
@@ -83,6 +76,13 @@
     width: 72px;
     height: 96px;
     /* we remove background-image here */
+}
+
+.cardontable {
+    position: absolute;
+    width: 72px;
+    height: 96px;
+    background-image: url('img/cards.jpg'); 
 }
 
 /** Table layout **/
