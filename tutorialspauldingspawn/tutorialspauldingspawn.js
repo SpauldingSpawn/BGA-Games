@@ -55,8 +55,10 @@ function (dojo, declare) {
             // Player hand
             this.playerHand = new ebg.stock(); // new stock object for hand
             this.playerHand.create( this, $('myhand'), this.cardwidth, this.cardheight );
+
             // Setting up player boards
             this.playerHand.image_items_per_row = 13; // 13 images per row
+
             // 2 = hearts, 5 is 5, and 42 is the card id, which normally would come from db
             dojo.connect( this.playerHand, 'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
 
@@ -68,6 +70,7 @@ function (dojo, declare) {
                     this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/cards.jpg', card_type_id);
                 }
             }
+            
             for( var player_id in gamedatas.players )
             {
                 var player = gamedatas.players[player_id];
