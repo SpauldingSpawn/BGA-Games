@@ -197,6 +197,9 @@ class TutorialSpauldingSpawn extends Table
         $this->cards->moveCard($card_id, 'cardsontable', $player_id);
         // XXX check rules here
         $currentCard = $this->cards->getCard($card_id);
+        $currentTrickColor = self::getGameStateValue( 'trickColor' ) ;
+        if( $currentTrickColor == 0 )
+           self::setGameStateValue( 'trickColor', $currentCard['type'] );
         // And notify
         self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'), array (
                 'i18n' => array ('color_displayed','value_displayed' ),'card_id' => $card_id,'player_id' => $player_id,
@@ -298,7 +301,23 @@ class TutorialSpauldingSpawn extends Table
         if ($this->cards->countCardInLocation('cardsontable') == 4) {
             // This is the end of the trick
             // Move all cards to "cardswon" of the given player
-            $best_value_player_id = self::activeNextPlayer(); // TODO figure out winner of trick
+            $cards_on_table = $this->cards->getCardsInLocation('cardsontable');
+            $best_value = 0;
+            $best_value_player_id = null;
+            $currentTrickColor = self::getGameStateValue('trickColor');
+            foreach ( $cards_on_table as $card ) {
+                // Note: type = card color
+                if ($card ['type'] == $currentTrickColor) {
+                    if ($best_value_player_id === null || $card ['type_arg'] > $best_value) {
+                        $best_value_player_id = $card ['location_arg']; // Note: location_arg = player who played this card on table
+                        $best_value = $card ['type_arg']; // Note: type_arg = value of the card
+                    }
+                }
+            }
+            // Active this player => he's the one who starts the next trick
+            $this->gamestate->changeActivePlayer( $best_value_player_id );
+
+            // Move all cards to "cardswon" of the given player
             $this->cards->moveAllCardsInLocation('cardsontable', 'cardswon', null, $best_value_player_id);
 
             // Notify
@@ -330,9 +349,91 @@ class TutorialSpauldingSpawn extends Table
     }
 
     function stEndHand() {
-        $this->gamestate->nextState("nextHand");
+        // Count and score points, then end the game or go to the next hand.
+    $players = self::loadPlayersBasicInfos();
+    // Gets all "hearts" + queen of spades
+   
+    $player_with_queen_of_spades = null;
+    $Shoot_Moon = false;
+    $player_to_points = array ();
+    foreach ( $players as $player_id => $player ) {
+        $player_to_points [$player_id] = 0;
+    }
+    $cards = $this->cards->getCardsInLocation("cardswon");
+    foreach ( $cards as $card ) {
+        $player_id = $card ['location_arg'];
+        // Note: 2 = heart
+        if ($card ['type'] == 2) {
+            $player_to_points [$player_id] ++;
+        }
+        else if (($card ['type'] == 1) && ($card ['type_arg'] == 12)) {
+            $player_to_points [$player_id] += 13;
+            $player_with_queen_of_spades = [$player_id];
+
+            
+        }
+    }
+    if ($player_to_points [$player_with_queen_of_spades] == 26) {
+        $Shoot_Moon == true;
+    }
+    // Apply scores to player
+    // If the player with the queen of spades has shot the moon, set them to 0 points lost and everyone else to 26
+    if ($Shoot_Moon) {
+        foreach ($player_to_points as $player_id => $points) {
+            if ($player_id == $player_with_queen_of_spades) {
+                $player_to_points [$player_id] = 0;
+                self::notifyAllPlayers("points", clienttranslate('${player_name} has shot the moon! Each other player loses 26 points!'));
+                
+            } else {
+                $player_to_points [$player_id] = 26;
+            }
+            $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
+            self::DbQuery($sql);
+        }
+    } else {
+        //Normal scoring occasion - separate conditions for a player who has no hearts, only hearts, and hearts + QoS
+        foreach ( $player_to_points as $player_id => $points ) {
+                
+                if (($points != 0) && ($player_id != $player_with_queen_of_spades)) { 
+                    $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
+                    self::DbQuery($sql);
+                    $heart_number = $player_to_points [$player_id];
+                    self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} hearts and loses ${nbr} points'), array (
+                            'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'],
+                            'nbr' => $heart_number ));
+                            
+                } else if ($player_id == $player_with_queen_of_spades) {
+                    $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
+                    self::DbQuery($sql);
+                    $heart_number = $player_to_points [$player_id] - 13; 
+                    self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} hearts and the Queen of Spades and loses {pointslost} points!'). array (
+                            'player_id' => $player_id, 'player_name' => $players [$player_id] ['player_name'],
+                            'nbr' => $heart_number,
+                            'pointslost' => $player_to_points [$player_id]));
+
+                } else {
+                    // No point lost (just notify)
+                    self::notifyAllPlayers("points", clienttranslate('${player_name} did not get any hearts'), array (
+                            'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'] ));
+                   }
+        }
     }
 
+    $newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
+    self::notifyAllPlayers( "newScores", '', array( 'newScores' => $newScores ) );
+
+    ///// Test if this is the end of the game
+    foreach ( $newScores as $player_id => $score ) {
+        if ($score <= -37) {
+            // Trigger the end of the game !
+            $this->gamestate->nextState("endGame");
+            return;
+        }
+    }
+
+    
+    $this->gamestate->nextState("nextHand");
+    }
 
     /*
     
