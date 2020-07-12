@@ -61,6 +61,7 @@ class TutorialSpauldingSpawn extends Table
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
+        $first_player = null;
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
@@ -110,9 +111,18 @@ class TutorialSpauldingSpawn extends Table
         $players = self::loadPlayersBasicInfos();
         foreach ( $players as $player_id => $player ) {
             $cards = $this->cards->pickCards(13, 'deck', $player_id);
-        } 
+                }
+        $twoClubCardOwner = self::getUniqueValueFromDb( "SELECT card_location_arg FROM card
+                                                         WHERE card_location='hand'
+                                                         AND card_type='3' AND card_type_arg='2' " );
+        if( $twoClubCardOwner !== null )
+        {
+          $first_player = $twoClubCardOwner;
+        } else {
+            
+        }
+             
 
-        
 
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -121,7 +131,8 @@ class TutorialSpauldingSpawn extends Table
        
 
         // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
+
+        $this->gamestate->changeActivePlayer( $first_player );
 
         /************ End of the game initialization *****/
     }
@@ -210,31 +221,6 @@ class TutorialSpauldingSpawn extends Table
         $this->gamestate->nextState('playCard');
     }
 
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
 
     
 //////////////////////////////////////////////////////////////////////////////
@@ -353,7 +339,7 @@ class TutorialSpauldingSpawn extends Table
     $players = self::loadPlayersBasicInfos();
     // Gets all "hearts" + queen of spades
    
-    $player_with_queen_of_spades = null;
+    $player_with_queen_of_spades = 1;
     $Shoot_Moon = false;
     $player_to_points = array ();
     foreach ( $players as $player_id => $player ) {
@@ -368,9 +354,7 @@ class TutorialSpauldingSpawn extends Table
         }
         else if (($card ['type'] == 1) && ($card ['type_arg'] == 12)) {
             $player_to_points [$player_id] += 13;
-            $player_with_queen_of_spades = [$player_id];
-
-            
+            $player_with_queen_of_spades = $player_id;
         }
     }
     if ($player_to_points [$player_with_queen_of_spades] == 26) {
@@ -382,7 +366,8 @@ class TutorialSpauldingSpawn extends Table
         foreach ($player_to_points as $player_id => $points) {
             if ($player_id == $player_with_queen_of_spades) {
                 $player_to_points [$player_id] = 0;
-                self::notifyAllPlayers("points", clienttranslate('${player_name} has shot the moon! Each other player loses 26 points!'));
+                self::notifyAllPlayers("points", clienttranslate('${player_name} has shot the moon! Each other player loses 26 points!'), array (
+                    'player_name' => $players [$player_id] ['player_name']));
                 
             } else {
                 $player_to_points [$player_id] = 26;

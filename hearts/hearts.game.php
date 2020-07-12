@@ -499,7 +499,7 @@ class Hearts extends Table
         // Note: club=4
         $twoClubCardOwner = self::getUniqueValueFromDb( "SELECT card_location_arg FROM card
                                                          WHERE card_location='hand'
-                                                         AND card_type='3' AND card_type_arg='2' " );
+                                                         AND card_type='4' AND card_type_arg='2' " );
         if( $twoClubCardOwner !== null )
         {
             $this->gamestate->changeActivePlayer( $twoClubCardOwner );
