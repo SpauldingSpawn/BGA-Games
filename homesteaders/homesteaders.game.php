@@ -32,14 +32,12 @@ class Homesteaders extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
+ 
         self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ) );        
+            "firstPlayerId"          => 10,
+            "turnCount"             => 11,
+            "currentStage"
+        ) );       
 	}
 	
     protected function getGameName( )
@@ -87,8 +85,22 @@ class Homesteaders extends Table
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // TODO: setup the initial game situation here
        
+        // Give Each Player Starting Resources (No difference for starting players)
+        /*
+        foreach player
+            give 1 Worker
+            give 6 silver
+            Initialize Railroad starting
+        */
+        // Setup Auction Tiles - different for 2/3 or 4 player game
+        /*
+        Setup Auction 1 Tiles in ORder
+        Randomize Auction 2 Tiles according to stage
+        If 4 Player Game 
+            Randomize Auction 3 Tiles according to stage
+        */
+
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();

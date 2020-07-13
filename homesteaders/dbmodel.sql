@@ -20,6 +20,34 @@
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
+
+-- Example 2: add a custom field to the standard "player" table
+-- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
+
+--- ### PLAYER INFORMATION ###
+--- Silver
+ALTER TABLE `player` ADD `silver` tinyint NOT NULL DEFAULT '0';
+--- Wood
+ALTER TABLE `player` ADD `wood` tinyint NOT NULL DEFAULT '0';
+--- Food
+ALTER TABLE `player` ADD `food` tinyint NOT NULL DEFAULT '0';
+--- Steel
+ALTER TABLE `player` ADD `steel` tinyint NOT NULL DEFAULT '0';
+--- Gold
+ALTER TABLE `player` ADD `gold` tinyint NOT NULL DEFAULT '0'; 
+--- Copper
+ALTER TABLE `player` ADD `copper`  tinyint NOT NULL DEFAULT '0'; 
+--- Adorable Cow Figurines
+ALTER TABLE `player` ADD 'livestock'  tinyint NOT NULL DEFAULT '0'; 
+--- Debt chits
+ALTER TABLE `player` ADD `debt` tinyint NOT NULL DEFAULT '0'; 
+--- Trade chits
+ALTER TABLE `player` ADD `tradeTokens` tinyint NOT NULL DEFAULT '0'; 
+--- Victory point chits
+ALTER TABLE `player` ADD `VictoryPointTokens` tinyint NOT NULL DEFAULT '0'; 
+
+--- Do buildings need to go in the database? Probably
+
 -- CREATE TABLE IF NOT EXISTS `card` (
 --   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 --   `card_type` varchar(16) NOT NULL,
@@ -28,8 +56,3 @@
 --   `card_location_arg` int(11) NOT NULL,
 --   PRIMARY KEY (`card_id`)
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-
--- Example 2: add a custom field to the standard "player" table
--- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
-

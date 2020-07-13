@@ -64,12 +64,77 @@ $machinestates = array(
     // Note: ID=2 => your first state
 
     2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
+        "name" => "playerAllocateWorkers",
+        "description" => clienttranslate('${actplayer} must bid or pass'),
+        "descriptionmyturn" => clienttranslate('${you} must bid or pass'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "bid", "pass" ),
+        "transitions" => array( "playerBidTurn" => 2, "playerPassReward" => 3 )
+    ),
+
+    3 => array(
+        "name" => "playerPassReward",
+        "description" => clienttranslate('${actplayer} must choose a '),
+        "descriptionmyturn" => clienttranslate('${you} must bid or pass'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "bid", "pass" ),
+        "transitions" => array( "bid" => 2, "pass" => 2 )
+    ),
+
+    //Complication for handling when someone passes first round without having other people had a chance to bid or pass
+    //Current idea to keep playerPassReward as a multiple action and let all passers go to the same time
+    //Added a bunch of extra transitons to playerBidTurn to keep these allowed
+    10 => array(
+        "name" => "playerBidTurn",
+        "description" => clienttranslate('${actplayer} must bid or pass'),
+        "descriptionmyturn" => clienttranslate('${you} must bid or pass'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "bid", "pass", 'passFirstRound', 'bidWithAPassedPlayer' ),
+        "transitions" => array( "bid" => 10, "pass" => 11, "passFirstRound" => 10, 'bidWithAPassedPlayer' => 11 )
+    ),
+
+    11 => array(
+        "name" => "playerPassReward",
+        "description" => clienttranslate('Passing players must choose an item from the Railroad Development Track'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an item from the Railroad Development Track'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "choose" ),
+        "transitions" => array( "choose" => 12 ),
+    ),
+
+    //Currently only allowing Debt to be taken when relevant 
+    12 => array(
+        "name" => "playerBuild",
+        "description" => clienttranslate('${actplayer} must build an allowed building type'),
+        "descriptionmyturn" => clienttranslate('${you} must build an allowed building type'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "build", "trade", "takeDebt", "lastPlayerBuild"  ),
+        "transitions" => array( "trade" => 12, "takeDebt" => 12, "build" => 12, "lastPlayerBuild" => 13  ),
+    ),
+
+    13 => array(
+        "name" => "roundEnd",
+        "description" => clienttranslate('Configuring Round'),
+        "type" => "game",
+        "possibleactions" => array( "build", "trade", "takeDebt", "lastPlayerBuild"  ),
+        "transitions" => array( "nextRound" => 2, "nextAge" => 2, "endGame" => 97  ),
+    ),
+
+    97 => array(
+        "name" => "finalScoringChance",
+        "description" => clienttranslate('Pay off debt and do final trades'),
+        "descriptionmyturn" => clienttranslate('${you} may do trades and pay off debt before final scoring'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "build", "trade", "takeDebt", "lastPlayerBuild"  ),
+        "transitions" => array( "payDebt" => 97, "trade" => 97, "done" => 97  ),
+    ),
+
+    98 => array(
+        "name" => "endGameScoring",
+        "description" => clienttranslate('Configuring Round'),
+        "type" => "game",
+        "possibleactions" => array( "scoringCalculated"  ),
+        "transitions" => array( "scoringCalculated" => 99  ),
     ),
     
 /*
