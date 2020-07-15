@@ -25,6 +25,8 @@
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
 --- ### PLAYER INFORMATION ###
+--- Workers
+ALTER TABLE `player` ADD `workers` tinyint NOT NULL DEFAULT '0';
 --- Silver
 ALTER TABLE `player` ADD `silver` tinyint NOT NULL DEFAULT '0';
 --- Wood

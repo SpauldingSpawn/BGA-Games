@@ -95,6 +95,10 @@ class Homesteaders extends Table
         */
         foreach( $players as $player_id => $player )
         {
+            
+            $sql="UPDATE player SET workers=1 where player_id =.$player_id";
+            $sql="UPDATE player SET silver=6 where player_id =.$player_id";
+            
         // Setup Auction Tiles - different for 2/3 or 4 player game
         /*
         Setup Auction 1 Tiles in ORder
