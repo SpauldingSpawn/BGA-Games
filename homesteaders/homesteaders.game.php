@@ -93,6 +93,8 @@ class Homesteaders extends Table
             give 6 silver
             Initialize Railroad starting
         */
+        foreach( $players as $player_id => $player )
+        {
         // Setup Auction Tiles - different for 2/3 or 4 player game
         /*
         Setup Auction 1 Tiles in ORder
@@ -245,6 +247,10 @@ class Homesteaders extends Table
         $this->gamestate->nextState( 'some_gamestate_transition' );
     }    
     */
+    // this will make all players multiactive just before entering the state
+   function st_MultiPlayerInit() {
+        $this->gamestate->setAllPlayersMultiactive();
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie

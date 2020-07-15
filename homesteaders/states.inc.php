@@ -65,20 +65,30 @@ $machinestates = array(
 
     2 => array(
         "name" => "playerAllocateWorkers",
-        "description" => clienttranslate('${actplayer} must bid or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must bid or pass'),
+        "description" => clienttranslate('Other players must place their workers'),
+        "descriptionmyturn" => clienttranslate('${you} must place your workers'),
         "type" => "multipleactiveplayer",
-        "possibleactions" => array( "bid", "pass" ),
-        "transitions" => array( "playerBidTurn" => 2, "playerPassReward" => 3 )
+        "possibleactions" => array( "doneAllocating", "repeatAllocate", "trade"  ),
+        "transitions" => array( "trade" => 2, "repeatAllocate" => 2, "doneAllocating" =>3 ),
+        "action" => "st_MultiPlayerInit"
+
     ),
 
     3 => array(
-        "name" => "playerPassReward",
-        "description" => clienttranslate('${actplayer} must choose a '),
-        "descriptionmyturn" => clienttranslate('${you} must bid or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "bid", "pass" ),
-        "transitions" => array( "bid" => 2, "pass" => 2 )
+        "name" => "playersGetResources",
+        "description" => clienttranslate('Everyone gets their resources '),
+        "type" => "game",
+        "possibleactions" => array( "distribute" ),
+        "transitions" => array( "distribute" => 4 )
+    ),
+
+    4 => array(
+        "name" => "payWorkers",
+        "description" => clienttranslate('Everyone must pay their workers resources '),
+        "descriptionmyturn" => clienttranslate('${you} must pay your workers'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "takeDebt", "trade", "finishPaying" ),
+        "transitions" => array( "finishPaying" => 4 )
     ),
 
     //Complication for handling when someone passes first round without having other people had a chance to bid or pass
@@ -102,17 +112,28 @@ $machinestates = array(
         "transitions" => array( "choose" => 12 ),
     ),
 
-    //Currently only allowing Debt to be taken when relevant 
-    12 => array(
-        "name" => "playerBuild",
-        "description" => clienttranslate('${actplayer} must build an allowed building type'),
-        "descriptionmyturn" => clienttranslate('${you} must build an allowed building type'),
+    12  => array(
+        "name" => "playerPayForAuction",
+        "description" => clienttranslate('${actplayer} must pay for their auction tile'),
+        "descriptionmyturn" => clienttranslate('${you} must pay for your auction tile'),
         "type" => "activeplayer",
-        "possibleactions" => array( "build", "trade", "takeDebt", "lastPlayerBuild"  ),
-        "transitions" => array( "trade" => 12, "takeDebt" => 12, "build" => 12, "lastPlayerBuild" => 13  ),
+        "args" => "argsAuctionPrice",
+        "possibleactions" => array( "takeDebt", "trade", "payAuction"  ),
+        "transitions" => array( "trade" => 12, "takeDebt" => 12, "payAuction" => 13  ),
     ),
 
+    //Currently only allowing Debt to be taken when relevant 
     13 => array(
+        "name" => "playerBuild",
+        "description" => clienttranslate('${actplayer} may build an allowed building type'),
+        "descriptionmyturn" => clienttranslate('${you} may build an allowed building type'),
+        "type" => "activeplayer",
+        "args" => array("argsBuildingTypes", "argsAuctionBoon"),
+        "possibleactions" => array( "build", "trade", "takeDebt", "lastPlayerBuild"  ),
+        "transitions" => array( "trade" => 13, "takeDebt" => 13, "build" => 13, "lastPlayerBuild" => 14  ),
+    ),
+
+    14 => array(
         "name" => "roundEnd",
         "description" => clienttranslate('Configuring Round'),
         "type" => "game",
