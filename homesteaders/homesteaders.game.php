@@ -91,7 +91,7 @@ class Homesteaders extends Table
         foreach player
             give 1 Worker
             give 6 silver
-            Initialize Railroad starting
+            Initialize Railroad starting -> already initalized to start in database
         */
         foreach( $players as $player_id => $player )
         {

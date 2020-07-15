@@ -27,6 +27,8 @@
 --- ### PLAYER INFORMATION ###
 --- Workers
 ALTER TABLE `player` ADD `workers` tinyint NOT NULL DEFAULT '0';
+---
+ALTER TABLE 'player' ADD 'railroadAdvancement' tinying NOT NULL DEFAULT '0';
 --- Silver
 ALTER TABLE `player` ADD `silver` tinyint NOT NULL DEFAULT '0';
 --- Wood
@@ -49,6 +51,30 @@ ALTER TABLE `player` ADD `tradeTokens` tinyint NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `VictoryPointTokens` tinyint NOT NULL DEFAULT '0'; 
 
 --- Do buildings need to go in the database? Probably
+
+--- Let's count railroad tiles as a building 
+ CREATE TABLE IF NOT EXISTS `building` (
+   `building_id` int(10),
+   `building_type` varchar(16) NOT NULL,
+   `building_type_arg` int(11) NOT NULL,
+   'building_age' varchar(16) NOT NULL,
+   'building_age_arg' int(11) NOT NULL,
+   `building_location` varchar(16) NOT NULL,
+   `building_location_arg` int(11) NOT NULL,
+   PRIMARY KEY (`building_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+ CREATE TABLE IF NOT EXISTS `auctionTiles` (
+   `tile_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `tile_age` varchar(16) NOT NULL,
+   `tile_age_arg` int(11) NOT NULL,
+   `tile_effect` varchar(16) NOT NULL,
+   `tile_effect_arg` int(11) NOT NULL,
+   `tile_bonus` varchar(16) NOT NULL,
+   `tile_bonus_arg` int(11) NOT NULL,
+   PRIMARY KEY (`tile_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 
 -- CREATE TABLE IF NOT EXISTS `card` (
 --   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
