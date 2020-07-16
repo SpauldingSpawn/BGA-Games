@@ -107,6 +107,8 @@ class Homesteaders extends Table
             Randomize Auction 3 Tiles according to stage
         */
 
+        
+
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();

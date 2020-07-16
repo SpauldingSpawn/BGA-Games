@@ -64,7 +64,29 @@ ALTER TABLE `player` ADD `VictoryPointTokens` tinyint NOT NULL DEFAULT '0';
    PRIMARY KEY (`building_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
- CREATE TABLE IF NOT EXISTS `auctionTiles` (
+ CREATE TABLE IF NOT EXISTS `auctionTiles1` (
+   `tile_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `tile_age` varchar(16) NOT NULL,
+   `tile_age_arg` int(11) NOT NULL,
+   `tile_effect` varchar(16) NOT NULL,
+   `tile_effect_arg` int(11) NOT NULL,
+   `tile_bonus` varchar(16) NOT NULL,
+   `tile_bonus_arg` int(11) NOT NULL,
+   PRIMARY KEY (`tile_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+  CREATE TABLE IF NOT EXISTS `auctionTiles2` (
+   `tile_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `tile_age` varchar(16) NOT NULL,
+   `tile_age_arg` int(11) NOT NULL,
+   `tile_effect` varchar(16) NOT NULL,
+   `tile_effect_arg` int(11) NOT NULL,
+   `tile_bonus` varchar(16) NOT NULL,
+   `tile_bonus_arg` int(11) NOT NULL,
+   PRIMARY KEY (`tile_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+  CREATE TABLE IF NOT EXISTS `auctionTiles3` (
    `tile_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
    `tile_age` varchar(16) NOT NULL,
    `tile_age_arg` int(11) NOT NULL,
